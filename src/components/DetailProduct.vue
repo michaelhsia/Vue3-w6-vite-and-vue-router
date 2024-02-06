@@ -43,7 +43,9 @@
 </template>
 
 <script>
+// 匯入 BS5 才能用 BS5 方法創造 modal 實體
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
+
 export default {
   props: {
     product: {

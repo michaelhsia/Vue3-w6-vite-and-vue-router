@@ -1,6 +1,7 @@
 <template>
   <h1>產品列表</h1>
-  <VueLodaing :active='isLoading' />
+  <!-- isLoading 為 true 會載入 VueLoading -->
+  <VueLoading :active='isLoading' />
   <table class='table align-middle'>
     <thead>
       <tr>
@@ -39,6 +40,7 @@
 </template>
 
 <script>
+// 查看更多 Modal
 import DetailProduct from '../components/DetailProduct.vue'
 import Swal from 'sweetalert2'
 const { VITE_URL, VITE_PATH } = import.meta.env
@@ -65,10 +67,14 @@ export default {
       this.$refs.detailModal.openModal()
     },
     getProductData () {
+      this.isLoading = true
+
       this.axios
         .get(`${VITE_URL}/api/${VITE_PATH}/products/all`)
         .then((res) => {
           this.products = res.data.products
+
+          this.isLoading = false
         })
         .catch((err) => {
           Swal.fire({
