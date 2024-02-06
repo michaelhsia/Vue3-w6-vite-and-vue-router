@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>Hello, This is Home Page.</h1>
+    <h1>這是首頁</h1>
   </div>
 </template>
 
@@ -10,5 +10,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

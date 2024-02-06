@@ -1,5 +1,5 @@
 <template>
-  <h1>This is About page.</h1>
+  <h1>很多好吃的</h1>
 </template>
 
 <script>
@@ -7,5 +7,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
