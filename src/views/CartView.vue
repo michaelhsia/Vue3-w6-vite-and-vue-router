@@ -24,7 +24,7 @@
         <td width='100'>{{ item.product.title }}</td>
         <td width='100'>
           <div class='input-group'>
-            <input type='number' class='form-control border-success' aria-label='Amount (to the nearest dollar)'
+            <input type='number' min='1' class='form-control border-success' aria-label='Amount (to the nearest dollar)'
               :value='item.qty' @change='(evt) => updateCartProduct(item.id, item.product.id, evt)' />
             <span class='input-group-text bg-success text-white border-success'>{{ item.product.unit }}</span>
           </div>
@@ -103,6 +103,7 @@ const { VITE_URL, VITE_PATH } = import.meta.env
 export default {
   data () {
     return {
+      isLoading: false,
       // 購物車資料
       carts: [],
 
@@ -121,16 +122,49 @@ export default {
     }
   },
   methods: {
-    // product 物件為所有商品中的某一項，點擊查看更多後，會把 product 賦予給 detailProduct，再透過 props 傳到 detailModal，進而渲染 detailModal 介面
-    openModal (product) {
-      this.detailProduct = product
-      this.$refs.detailModal.openModal()
-    },
     getCart () {
+      this.isLoading = true
       this.axios
         .get(`${VITE_URL}/api/${VITE_PATH}/cart`)
         .then((res) => {
           this.carts = res.data.data.carts
+          this.isLoading = false
+        })
+        .catch((err) => {
+          Swal.fire({
+            title: `${err.response.data.message}`,
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        })
+    },
+    // 綁定 input change 事件
+    updateCartProduct (cartId, productId, event) {
+      this.isLoading = true
+
+      const data = {
+        data: {
+          product_id: productId,
+          // 要轉成數字型別所以乘上 1
+          qty: event.target.value * 1
+        }
+      }
+      this.axios
+        .put(`${VITE_URL}/api/${VITE_PATH}/cart/${cartId}`, data)
+        .then((res) => {
+          this.getCart()
+
+          this.isLoading = false
+
+          setTimeout(() => {
+            Swal.fire({
+              title: `${res.data.message}`,
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500
+            })
+          }, 1200)
         })
         .catch((err) => {
           Swal.fire({
@@ -142,9 +176,12 @@ export default {
         })
     },
     delSingleCart (cartId) {
+      this.isLoading = true
       this.axios
         .delete(`${VITE_URL}/api/${VITE_PATH}/cart/${cartId}`)
         .then((res) => {
+          this.isLoading = false
+
           setTimeout(() => {
             Swal.fire({
               title: `${res.data.message}`,
@@ -166,9 +203,12 @@ export default {
         })
     },
     delAllCart () {
+      this.isLoading = true
       this.axios
         .delete(`${VITE_URL}/api/${VITE_PATH}/carts`)
         .then((res) => {
+          this.isLoading = false
+
           setTimeout(() => {
             Swal.fire({
               title: `${res.data.message}`,
@@ -196,9 +236,12 @@ export default {
     },
     // 提交訂單後會自動清空購物車
     submitOrder () {
+      this.isLoading = true
+
       this.axios
         .post(`${VITE_URL}/api/${VITE_PATH}/order`, this.form)
         .then((res) => {
+          this.isLoading = false
           //   用 ref 抓取表單 DOM，在提交成功後清空表單
           this.$refs.form.resetForm()
 
@@ -235,4 +278,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+a:hover {
+  cursor: pointer;
+}
+</style>
